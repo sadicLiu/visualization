@@ -67,8 +67,17 @@ float *predict()
 }
 
 
-void show_result(Mat img, float *pred, int top_k, bool wait_key)
+void show_result(Mat img, float *pred, int top_k, bool wait_key, bool show_info)
 {
+    /*
+     * img: 待显示图片
+     * pred: 图片分类结果
+     * top_k: 展示前top k分类结果
+     * wait_key: 若为false, 是对视频进行播放, 设置相应帧率; 若为true, 则是对图片进行单独展示
+     * show_info: 当对图片进行单独展示时, 绘制开始和结束提示
+     *
+     * */
+
     // check input image
     if (img.data == nullptr)
     {
@@ -87,16 +96,24 @@ void show_result(Mat img, float *pred, int top_k, bool wait_key)
         return;
     }
 
-    // show resized image
     int display_width_img = 640;
     float scale = img.cols * 1.0 / display_width_img;
     int display_height_img = img.rows / scale;
+    Mat result(display_height_img, display_width_img / 2 * 3, img.type());
 
+    // show start information
+    if (show_info)
+    {
+        string start_info = "Recognizing object in image...";
+        draw_info(result, start_info);
+
+        imshow("", result);
+        waitKey(2000);
+    }
+
+    // show resized image
     Mat resized(display_height_img, display_width_img, img.type());
     resize(img, resized, Size(display_width_img, display_height_img));
-
-//    imshow("img", resized);
-//    waitKey();
 
     // show classification result
     Mat cls = Mat::zeros(display_height_img, display_width_img / 2, img.type());
@@ -109,17 +126,42 @@ void show_result(Mat img, float *pred, int top_k, bool wait_key)
         draw_prob(cls, pred[indices[t]], (LABEL) indices[t], t, top_k, title_string);
     }
 
-//    imshow("cls", cls);
-//    waitKey();
-
     // concat resized image and cls result image
-    Mat result(display_height_img, display_width_img / 2 * 3, img.type());
     hconcat(resized, cls, result);
     imshow("", result);
+
     if (!wait_key)
         waitKey(1000 / 25);  // 1000ms / 25fps = 40ms
     else
-        waitKey();
+        waitKey(3000);
+
+    if (show_info)
+    {
+        string end_info = "Recognition done!";
+        draw_info(result, end_info);
+
+        imshow("", result);
+        waitKey(2000);
+    }
+}
+
+void draw_info(Mat &img, string info_str)
+{
+    int height = img.rows;
+    int width = img.cols;
+    img.setTo(Scalar(0, 0, 0));
+
+    int font_face = FONT_HERSHEY_COMPLEX;
+    double font_scale = 1;
+    int thickness = 1;
+    int baseline;
+    cv::Size text_size = cv::getTextSize(info_str, font_face, font_scale, thickness, &baseline);
+
+    int p_x = (width - text_size.width) / 2;
+    int p_y = (height + text_size.height) / 2;
+
+    putText(img, info_str, Point(p_x, p_y), font_face, font_scale, Scalar(255, 255, 255),
+            thickness);
 }
 
 void draw_prob(Mat &img, float prob, LABEL label, int rank, int top_k, string title_str)
@@ -149,6 +191,7 @@ void draw_prob(Mat &img, float prob, LABEL label, int rank, int top_k, string ti
     }
 
     string label_str = get_label_string(label);
+    label_str += " (" + to_string(prob).substr(0, 4) + ")";
 
     int font_face = FONT_HERSHEY_COMPLEX;
     double font_scale = .6;
@@ -166,7 +209,7 @@ void draw_prob(Mat &img, float prob, LABEL label, int rank, int top_k, string ti
     }
 }
 
-void process_img(string img_path, bool wait_key)
+void process_img(string img_path, bool wait_key, bool show_info)
 {
     Mat img = imread(img_path);
     resize(img, img, Size(640, 480));
@@ -174,19 +217,19 @@ void process_img(string img_path, bool wait_key)
     // float *pred = predict(network, img);  // todo: invoke network prediction here
     float *pred = predict();
 
-    show_result(img, pred, 5, wait_key);
+    show_result(img, pred, TOPK, wait_key, show_info);
 
     delete[]pred;
 }
 
-void process_img(Mat image, bool wait_key)
+void process_img(Mat image, bool wait_key, bool show_info)
 {
     resize(image, image, Size(640, 480));
 
     // float *pred = predict(network, img);  // todo: invoke network prediction here
     float *pred = predict();
 
-    show_result(image, pred, 5, wait_key);
+    show_result(image, pred, TOPK, wait_key, show_info);
 
     delete[]pred;
 }

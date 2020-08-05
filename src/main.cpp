@@ -7,12 +7,12 @@ int main(int argc, char **argv)
 {
 
     // process video
-    string video_path = "../military.flv";
-    process_video(video_path);
+//    string video_path = "../military.flv";
+//    process_video(video_path);
 
     // process single image
-    /*string img_path = "../tank.jpg";
-    process_img(img_path, true);*/
+    string img_path = "../tank.jpg";
+    process_img(img_path, true, true);
 
     return 0;
 }

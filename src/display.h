@@ -10,6 +10,8 @@
 #define G 171
 #define B 82
 
+#define TOPK 5
+
 
 using namespace std;
 using namespace cv;
@@ -28,13 +30,15 @@ typedef enum
     CANNON
 } LABEL;
 
-void show_result(Mat img, float *preds, int top_k, bool wait_key);
+void show_result(Mat img, float *preds, int top_k, bool wait_key, bool show_info = false);
 
-void process_img(string img_path, bool wait_key);
+void process_img(string img_path, bool wait_key, bool show_info = false);
 
-void process_img(Mat image, bool wait_key);
+void process_img(Mat image, bool wait_key, bool show_info = false);
 
 void process_video(string video_path);
+
+void draw_info(Mat &img, string info_str);
 
 void draw_prob(Mat &img, float prob, LABEL label, int rank, int top_k, string title_str);
 
