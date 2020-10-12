@@ -1,4 +1,5 @@
 #include "display.h"
+#include "utils.h"
 
 string get_label_string(LABEL label)
 {
@@ -40,6 +41,8 @@ string get_label_string(LABEL label)
     return res;
 }
 
+// 对输入图片进行分类, 获取预测结果
+// TODO: 目前是模拟的结果, 分类可用之后, 使用真实分类流程替代
 float *predict()
 {
     float *pred = new float[NUM_CLASSES];
@@ -206,47 +209,3 @@ void draw_prob(Mat &img, float prob, LABEL label, int rank, int top_k, string ti
                 thickness);
     }
 }
-
-void process_img(string img_path, bool wait_key, bool show_info)
-{
-    Mat img = imread(img_path);
-    resize(img, img, Size(640, 480));
-
-    // float *pred = predict(network, img);  // todo: invoke network prediction here
-    float *pred = predict();
-
-    show_result(img, pred, TOPK, wait_key, show_info);
-
-    delete[]pred;
-}
-
-void process_img(Mat image, bool wait_key, bool show_info)
-{
-    resize(image, image, Size(640, 480));
-
-    // float *pred = predict(network, img);  // todo: invoke network prediction here
-    float *pred = predict();
-
-    show_result(image, pred, TOPK, wait_key, show_info);
-
-    delete[]pred;
-}
-
-void process_video(string video_path)
-{
-    VideoCapture capture(video_path);
-    Mat frame;
-
-    while (true)
-    {
-        if (capture.read(frame))
-        {
-            process_img(frame, false);
-        } else
-        {
-            break;
-        }
-    }
-}
-
-
