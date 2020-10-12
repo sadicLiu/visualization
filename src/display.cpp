@@ -40,7 +40,6 @@ string get_label_string(LABEL label)
     return res;
 }
 
-
 float *predict()
 {
     float *pred = new float[NUM_CLASSES];
@@ -65,7 +64,6 @@ float *predict()
 
     return pred;
 }
-
 
 void show_result(Mat img, float *pred, int top_k, bool wait_key, bool show_info)
 {
