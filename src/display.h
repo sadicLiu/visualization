@@ -36,7 +36,4 @@ void draw_info(Mat &img, string info_str);
 
 void draw_prob(Mat &img, float prob, LABEL label, int rank, int top_k, string title_str);
 
-float *predict();
-
-
 #endif //DEMO_DISPLAY_H

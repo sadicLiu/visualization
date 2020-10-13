@@ -5,6 +5,33 @@
 
 using namespace std;
 
+// 对输入图片进行分类, 获取预测结果
+// TODO: 目前是模拟的结果, 分类可用之后, 使用真实分类流程替代
+float *predict()
+{
+    float *pred = new float[NUM_CLASSES];
+    float small[7] = {0.01, 0.0, 0.01, 0.01, 0.02, 0.03, 0.02};
+
+    srand((unsigned) time(NULL));
+    float top1 = (rand() % 10) / 10.f;
+    float top2 = 0.9f - top1;
+
+    srand((unsigned) time(NULL));
+    int index_top1 = rand() % 9;
+    int index_top2 = index_top1 / 2 == index_top1 ? index_top1 + 1 : index_top1 / 2;
+
+    int idx_small = 0;
+    int i;
+    for (i = 0; i < NUM_CLASSES; i++)
+    {
+        pred[i] = i == index_top1 ? top1
+                                  : i == index_top2 ? top2
+                                                    : small[idx_small++];
+    }
+
+    return pred;
+}
+
 // 对视频文件进行分类并展示
 void run_predict()
 {
