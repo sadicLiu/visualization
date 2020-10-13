@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "display.h"
 #include "utils.h"
 
@@ -38,7 +39,6 @@ void run_predict()
     cout << "run pred..." << endl;
 
     string video_path = "./military.flv";
-
     VideoCapture capture(video_path);
     Mat frame;
 
@@ -63,6 +63,12 @@ void run_predict()
 void run_test()
 {
     cout << "run test..." << endl;
+    int num_pos = 10;   // 正确分类的样本数量
+    int num_neg = 11;   // 错误分类的样本数量
+
+    float accuracy = num_pos * 1.0f / (num_pos + num_neg);
+    cout << setiosflags(ios::fixed) << setprecision(2);
+    cout << "Accuracy: " << accuracy * 100 << "%" << endl;
 }
 
 // 分类一张图片的demo
