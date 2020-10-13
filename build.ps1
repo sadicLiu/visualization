@@ -1,4 +1,5 @@
 rm -r -fo cmake-build-debug
+rm run.exe
 
 mkdir cmake-build-debug
 cd cmake-build-debug
