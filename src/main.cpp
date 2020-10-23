@@ -36,7 +36,7 @@ float *predict()
 // 对视频文件进行分类并展示
 void run_predict()
 {
-    cout << "run pred..." << endl;
+    cout << "Run pred..." << endl;
 
     string video_path = "./military.flv";
     VideoCapture capture(video_path);
@@ -62,9 +62,25 @@ void run_predict()
 // 对测试集进行分类, 并打印分类准确率
 void run_test()
 {
-    cout << "run test..." << endl;
+    cout << "Run test..." << endl;
     int num_pos = 10;   // 正确分类的样本数量
     int num_neg = 11;   // 错误分类的样本数量
+
+    ifstream file_txt("./testset/test.txt");
+    if (!file_txt)
+    {
+        cerr << "Label file not exists!" << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file_txt, line))
+    {
+        string path_img = line.substr(0, line.length() - 2);
+        int cls_idx = stoi(line.substr(line.length() - 1, 1));
+        cout << path_img << ": " << cls_idx << endl;
+    }
+
 
     float accuracy = num_pos * 1.0f / (num_pos + num_neg);
     cout << setiosflags(ios::fixed) << setprecision(2);
@@ -82,6 +98,11 @@ void run_demo()
     float *pred = predict();
     show_result(img, pred, TOPK, true, true);
     delete[]pred;
+}
+
+void run_test_img()
+{
+
 }
 
 
@@ -109,6 +130,9 @@ int main(int argc, char **argv)
     } else if (0 == strcmp(argv[1], "demo"))
     {
         run_demo();
+    } else if (0 == strcmp(argv[1], "test_img"))
+    {
+        run_test_img();
     } else
     {
         fprintf(stderr, "Not an option: %s\n", argv[1]);
