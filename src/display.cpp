@@ -59,11 +59,14 @@ void show_result(Mat img, float *pred, int top_k, bool wait_key, bool show_info)
         return;
     }
 
+    float prob[NUM_CLASSES];
+    softmax<float>(pred, prob, NUM_CLASSES);
+
     // check input scores
     float sum = 0.0f;
     int i;
     for (i = 0; i < NUM_CLASSES; i++)
-        sum += pred[i];
+        sum += prob[i];
     if (abs(sum - 1.0) > 0.00001)
     {
         cerr << "Wrong input prediction!" << endl;
@@ -91,13 +94,13 @@ void show_result(Mat img, float *pred, int top_k, bool wait_key, bool show_info)
 
     // show classification result
     Mat cls = Mat::zeros(display_height_img, display_width_img / 2, img.type());
-    vector<int> indices = argsort(vector<float>(pred, pred + NUM_CLASSES));
+    vector<int> indices = argsort(vector<float>(prob, prob + NUM_CLASSES));
     // draw top-3 results
     int t;
     for (t = 0; t < top_k; t++)
     {
         string title_string = t == 0 ? "Top-" + to_string(top_k) + " Predictions" : "";
-        draw_prob(cls, pred[indices[t]], (LABEL) indices[t], t, top_k, title_string);
+        draw_prob(cls, prob[indices[t]], (LABEL) indices[t], t, top_k, title_string);
     }
 
     // concat resized image and cls result image
